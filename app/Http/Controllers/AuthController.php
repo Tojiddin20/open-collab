@@ -6,6 +6,8 @@ use App\Constants\ExternalAuthenticationSystems;
 use App\Models\ExternalAuthentication;
 use App\Models\ExternalAuthenticationSystem;
 use App\Models\User;
+use Exception;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,19 +17,29 @@ use Throwable;
 
 class AuthController extends Controller {
     /**
-     * @return RedirectResponse
+     * @return View
      */
-    public function googleRedirect(): RedirectResponse {
-        return Socialite::driver(ExternalAuthenticationSystems::GOOGLE)->redirect();
+    public function login(): View {
+        return view('login');
     }
 
     /**
-     * @return RedirectResponse|null
+     * @return RedirectResponse
      */
-    public function googleCallback(): RedirectResponse|null {
+    public function logout(): RedirectResponse {
+        Auth::logout();
+        return redirect('/');
+    }
+
+    /**
+     * @param class-string<ExternalAuthenticationSystems> $system
+     * @return RedirectResponse|string
+     * @throws Exception
+     */
+    public function externalLoginRedirectLogic(string $system): RedirectResponse|string {
         DB::beginTransaction();
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $googleUser = Socialite::driver($system)->stateless()->user();
 
             $externalAuthentication = ExternalAuthentication::query()
                 ->where('authentication_id', '=', $googleUser->getId())
@@ -35,7 +47,7 @@ class AuthController extends Controller {
 
             if (!$externalAuthentication) {
                 $externalAuthenticationSystem = ExternalAuthenticationSystem::query()
-                    ->where('name', '=', ExternalAuthenticationSystems::GOOGLE)
+                    ->where('name', '=', $system)
                     ->first();
 
                 $externalAuthenticationId = Str::uuid()->toString();
@@ -60,19 +72,56 @@ class AuthController extends Controller {
 
             DB::commit();
 
-            return redirect()->intended('/dashboard');
+            return redirect('/');
         } catch (Throwable $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
-            return null;
+            ddd($exception);
+            return "Something went wrong: {$exception->getMessage()}";
         }
     }
 
     /**
      * @return RedirectResponse
      */
-    public function logout(): RedirectResponse {
-        Auth::logout();
-        return redirect('/login');
+    public function google(): RedirectResponse {
+        return Socialite::driver(ExternalAuthenticationSystems::GOOGLE)->redirect();
+    }
+
+    /**
+     * @return string|RedirectResponse
+     * @throws Exception
+     */
+    public function googleRedirect(): string|RedirectResponse {
+        return $this->externalLoginRedirectLogic(ExternalAuthenticationSystems::GOOGLE);
+    }
+
+    /**
+     * @return RedirectResponse
+     */
+    public function github(): RedirectResponse {
+        return Socialite::driver(ExternalAuthenticationSystems::GITHUB)->redirect();
+    }
+
+    /**
+     * @return string|RedirectResponse
+     * @throws Exception
+     */
+    public function githubRedirect(): string|RedirectResponse {
+        return $this->externalLoginRedirectLogic(ExternalAuthenticationSystems::GITHUB);
+    }
+
+    /**
+     * @return RedirectResponse
+     */
+    public function facebook(): RedirectResponse {
+        return Socialite::driver(ExternalAuthenticationSystems::FACEBOOK)->redirect();
+    }
+
+    /**
+     * @return string|RedirectResponse
+     * @throws Exception
+     */
+    public function facebookRedirect(): string|RedirectResponse {
+        return $this->externalLoginRedirectLogic(ExternalAuthenticationSystems::FACEBOOK);
     }
 }

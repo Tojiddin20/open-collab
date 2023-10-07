@@ -17,9 +17,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index']);
 
-Route::get('/login', static fn () => view('login'));
-Route::get('/logout', [AuthController::class, 'logout']);
-Route::get('/dashboard', static fn () => view('dashboard'))->middleware(['auth']);
+Route::group(['middleware' => 'guest'], static function () {
+    Route::get('/login', [AuthController::class, 'login'])->name('login');
 
-Route::get('auth/google', [AuthController::class, 'googleRedirect'])->name('google-auth');
-Route::get('auth/google/call-back', [AuthController::class, 'googleCallback']);
+    Route::get('/login/google', [AuthController::class, 'google'])->name('google-login');
+    Route::get('/login/google/redirect', [AuthController::class, 'googleRedirect']);
+
+    Route::get('/login/github', [AuthController::class, 'github'])->name('github-login');
+    Route::get('/login/github/redirect', [AuthController::class, 'githubRedirect']);
+
+    Route::get('/login/facebook', [AuthController::class, 'facebook'])->name('facebook-login');
+    Route::get('/login/facebook/redirect', [AuthController::class, 'facebookRedirect']);
+});
+
+Route::group(['middleware' => 'auth'], static function () {
+    Route::get('/logout', [AuthController::class, 'logout']);
+});

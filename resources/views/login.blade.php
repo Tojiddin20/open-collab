@@ -17,6 +17,10 @@
 </head>
 <body class="antialiased">
 <h2>Login</h2>
-<a href="{{ route('google-auth') }}">Google login</a>
+<a href="{{ route('google-login') }}">Google login</a>
+<br>
+<a href="{{ route('github-login') }}">Github login</a>
+<br>
+<a href="{{ route('facebook-login') }}">Facebook login</a>
 </body>
 </html>
