@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('/', static function () {
     return view('welcome');
 });
+
+Route::get('/login', static fn () => view('login'));
+Route::get('/logout', [AuthController::class, 'logout']);
+Route::get('/dashboard', static fn () => view('dashboard'))->middleware(['auth']);
+
+Route::get('auth/google', [AuthController::class, 'googleRedirect'])->name('google-auth');
+Route::get('auth/google/call-back', [AuthController::class, 'googleCallback']);
