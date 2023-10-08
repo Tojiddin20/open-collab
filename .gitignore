@@ -18,3 +18,6 @@ yarn-error.log
 /.idea
 /.vscode
 UI/opencollab/back-end/openCollab/obj
+UI/opencollab/back-end/openCollab/wwwroot
+UI/opencollab/back-end/openCollab/app.db
+UI/opencollab/back-end/openCollab/wwwroot
