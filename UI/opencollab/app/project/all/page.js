@@ -19,7 +19,7 @@ const ProjectsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <Toaster />
+      <Toaster richColors={true} />
       <h1 className="text-3xl font-bold mb-8 text-blue-800">All Projects</h1>
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (

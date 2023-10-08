@@ -35,7 +35,7 @@ const ProjectDetails = ({ params }) => {
 
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-      <Toaster />
+      <Toaster richColors={true} />
       <div className="max-w-5xl bg-white p-8 rounded-lg shadow-lg flex">
         <div className="w-1/2 flex flex-col justify-center items-center">
           <h1 className="text-3xl font-bold mb-4">{project.name}</h1>

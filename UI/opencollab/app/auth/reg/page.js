@@ -57,7 +57,7 @@ const RegisterPage = () => {
 
     return (
         <div className="max-w-md m-32 mx-auto p-6 bg-white rounded-md shadow-lg">
-        <Toaster />
+        <Toaster richColors={true} />
             <h2 className="text-2xl mb-4 text-center">Register</h2>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">

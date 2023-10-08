@@ -63,7 +63,10 @@ const Deck = () => {
             let json = await result.json();
             console.log(json);
             setCards([json]);
-        } else {
+        } else if (result.status == 204) {
+            toast.success("Wow, you're all caught up!");
+        }
+        else {
             toast.error("Failed to fetch cards");
             toast.error(result.status)
         }
@@ -111,7 +114,7 @@ const Deck = () => {
 
     return (
         <div className="flex justify-center">
-            <Toaster />
+            <Toaster richColors={true} />
             {isLoaded ? (
                 <div className="w-1/2 h-full select-none bg-red-400">
                     {springs.map(({ x, y, rot }, i) => (

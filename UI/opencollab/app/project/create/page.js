@@ -68,7 +68,7 @@ const NewProjectForm = () => {
 
     return (
         <div className="max-w-md mt-32 mx-auto p-6 bg-white rounded-md shadow-lg">
-            <Toaster />
+            <Toaster richColors={true} />
             <h2 className="text-2xl mb-4 text-center">Create a New Project</h2>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
