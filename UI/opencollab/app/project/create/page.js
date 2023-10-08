@@ -60,7 +60,7 @@ const NewProjectForm = () => {
             console.log(json);
             toast.success('Project created successfully!');
 
-            router.push(json.id);
+            router.push(`${json.id}`);
         } else {
             toast.error('Failed to create project.');
         }

@@ -53,17 +53,42 @@ public class WeatherForecastController : ControllerBase
     [HttpPost("project/create")]
     public IActionResult CreateProject([FromForm] ProjectDto dto)
     {
+        string imagePath = SaveImage(dto);
+
         var project = new Project
         {
             Name = dto.Name,
             Description = dto.Description,
-            UserId = dto.UserId
+            UserId = dto.UserId,
+            ImagePath = imagePath
         };
 
         Context.Projects.Add(project);
         Context.SaveChanges();
 
         return Ok(project);
+    }
+
+    private static string SaveImage(ProjectDto dto)
+    {
+        var fileName = dto.Image.FileName;
+        var imagePath = Path.Combine("wwwroot", fileName);
+        using (var stream = new FileStream(imagePath, FileMode.Create))
+        {
+            dto.Image.CopyTo(stream);
+        }
+
+        return fileName;
+    }
+
+    [HttpGet("projects/{id}")]
+    public IActionResult GetProjects(int id)
+    {
+        var projects = Context.Projects.FirstOrDefault(p => p.Id == id);
+        if (projects is null) {
+            return NotFound("Project not found");
+        }
+        return Ok(projects);
     }
 }
 
@@ -85,4 +110,5 @@ public class ProjectDto {
     public string Name { get; set; }
     public string Description { get; set; }
     public int UserId { get; set; }
+    public IFormFile Image { get; set; }
 }

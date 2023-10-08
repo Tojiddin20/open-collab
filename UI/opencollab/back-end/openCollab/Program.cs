@@ -20,6 +20,8 @@ builder.Services.AddCors(options =>
     );
 });
 
+builder.Services.AddDirectoryBrowser();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -29,9 +31,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 app.UseCors("MyPolicy");
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseDirectoryBrowser(new DirectoryBrowserOptions() { RequestPath = "/dir" });
 
 app.UseAuthorization();
 
