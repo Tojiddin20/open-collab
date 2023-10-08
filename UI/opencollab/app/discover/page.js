@@ -12,42 +12,49 @@ const initialState = {
     rot: 0,
 };
 
-function sendSwipeInfo(approve, projectId) {
-    fetch(`http://localhost:5005/projects/vote`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            projectId: projectId,
-            userId: JSON.parse(parseInt(localStorage.getItem('token'))),
-            approve: approve,
-        }),
-    }).then((result) => {
-        if (result.status === 200) {
-            toast.success("Successfully swiped");
-        } else {
-            toast.error("Failed to swipe");
-        }
-    })
-}
-
-function handleSwipe(dir, projectId) {
-    if (dir == 1) {
-        toast.message("swiped right");
-        sendSwipeInfo(true, projectId)
-    } else {
-        toast.message("swiped left");
-        sendSwipeInfo(false, projectId)
-    }
-}
-
 // Define the Deck component
 const Deck = () => {
     const [gone] = useState(() => new Set()); // The set flags all the cards that are flicked out
     const [cards, setCards] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [empty, setEmpty] = useState(false);
+    const [shouldFetch, setShouldFetch] = useState(false);
+
+    function sendSwipeInfo(approve, projectId) {
+        fetch(`http://localhost:5005/projects/vote`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                projectId: projectId,
+                userId: JSON.parse(parseInt(localStorage.getItem('token'))),
+                approve: approve,
+            }),
+        }).then((result) => {
+            if (result.status === 200) {
+                toast.success("Successfully swiped");
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+
+            } else {
+                toast.error("Failed to swipe");
+            }
+        })
+    }
+
+    function handleSwipe(dir, projectId) {
+        if (dir == 1) {
+            toast.message("swiped right");
+            sendSwipeInfo(true, projectId)
+        } else {
+            toast.message("swiped left");
+            sendSwipeInfo(false, projectId)
+        }
+    }
+
 
     async function getCardData() {
         let result = await fetch(`http://localhost:5005/projects/discover`, {
@@ -63,6 +70,8 @@ const Deck = () => {
         if (result.status === 200) {
             let json = await result.json();
             console.log(json);
+            // clear the cards first
+            setCards([]);
             setCards([json]);
         } else if (result.status == 204) {
             toast.success("Wow, you're all caught up!");
@@ -74,12 +83,13 @@ const Deck = () => {
         }
 
         setIsLoaded(true);
+        setShouldFetch(false);
     }
 
     useEffect(() => {
         // Fetch project data based on projectId from your API
         getCardData();
-    }, []);
+    }, [shouldFetch]);
 
 
     const [springs, set] = useSprings(cards.length, (i) => ({
