@@ -98,7 +98,7 @@ public class WeatherForecastController : ControllerBase
         Context.Projects.Add(project);
         Context.SaveChanges();
 
-        return Ok(new { Id = project.Id } );
+        return Ok(new { Id = project.Id });
     }
 
     private static string SaveImage(ProjectDto dto)
@@ -168,27 +168,30 @@ public class WeatherForecastController : ControllerBase
             Approved = dto.Approve
         };
 
-        var existingTags = user.Tags;
-        var projectTags = project.Tags.Select(t => t.Name).ToList();
-        var intersection = existingTags.Select(x => x.Name).Intersect(projectTags).ToList();
-
-        Console.WriteLine("Existing tags: " + string.Join(", ", existingTags));
-        Console.WriteLine("Project tags: " + string.Join(", ", projectTags));
-        Console.WriteLine("intersection tags: " + string.Join(", ", intersection));
-
-        HashSet<string> tags = new();
-        // update user tags
-        // add the tags that are not in the user tags, but are in the project tags
-        foreach (var tag in project.Tags)
+        if (dto.Approve)
         {
-            if (!existingTags.Select(x => x.Name).Contains(tag.Name))
-            {
-                existingTags.Add(tag);
-                Console.WriteLine("Added tag: " + tag.Name);
-            }
-        }
+            var existingTags = user.Tags;
+            var projectTags = project.Tags.Select(t => t.Name).ToList();
+            var intersection = existingTags.Select(x => x.Name).Intersect(projectTags).ToList();
 
-        user.Tags = existingTags;
+            Console.WriteLine("Existing tags: " + string.Join(", ", existingTags));
+            Console.WriteLine("Project tags: " + string.Join(", ", projectTags));
+            Console.WriteLine("intersection tags: " + string.Join(", ", intersection));
+
+            HashSet<string> tags = new();
+            // update user tags
+            // add the tags that are not in the user tags, but are in the project tags
+            foreach (var tag in project.Tags)
+            {
+                if (!existingTags.Select(x => x.Name).Contains(tag.Name))
+                {
+                    existingTags.Add(tag);
+                    Console.WriteLine("Added tag: " + tag.Name);
+                }
+            }
+
+            user.Tags = existingTags;
+        }
 
         Context.UserReviews.Add(userReview);
         Context.SaveChanges();
