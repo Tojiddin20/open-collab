@@ -47,6 +47,7 @@ const Deck = () => {
     const [gone] = useState(() => new Set()); // The set flags all the cards that are flicked out
     const [cards, setCards] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [empty, setEmpty] = useState(false);
 
     async function getCardData() {
         let result = await fetch(`http://localhost:5005/projects/discover`, {
@@ -65,6 +66,7 @@ const Deck = () => {
             setCards([json]);
         } else if (result.status == 204) {
             toast.success("Wow, you're all caught up!");
+            setEmpty(true)
         }
         else {
             toast.error("Failed to fetch cards");
@@ -115,7 +117,7 @@ const Deck = () => {
     return (
         <div className="flex justify-center">
             <Toaster richColors={true} />
-            {isLoaded ? (
+            {isLoaded && !empty ? (
                 <div className="w-1/2 h-full select-none bg-red-400">
                     {springs.map(({ x, y, rot }, i) => (
                         <animated.div key={i} style={{ transform: to([x, y], (x, y) => `translate3d(${x}px,${y}px,0)`) }}>
@@ -147,16 +149,21 @@ const Deck = () => {
                         </animated.div>
                     ))}
                 </div>
-            ) : (
-                <div className="animate-pulse flex flex-col items-center justify-center min-h-screen bg-gray-100">
-                    <div className="w-1/2 h-12 bg-gray-300 rounded mb-4"></div>
-                    <div className="w-3/4 h-32 bg-gray-300 rounded mb-4"></div>
-                    <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
-                    <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
-                    <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
-                    <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
-                </div>
-            )
+            ) :
+                empty ? (
+                    <div className="flex justify-center">
+                        <h1 className="mt-44  font-bold text-5xl">You're all caught up 🎉!</h1>
+                    </div>
+                ) : (
+                    <div className="animate-pulse flex flex-col items-center justify-center min-h-screen bg-gray-100">
+                        <div className="w-1/2 h-12 bg-gray-300 rounded mb-4"></div>
+                        <div className="w-3/4 h-32 bg-gray-300 rounded mb-4"></div>
+                        <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
+                        <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
+                        <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
+                        <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
+                    </div>
+                )
             }
         </div>
     );
