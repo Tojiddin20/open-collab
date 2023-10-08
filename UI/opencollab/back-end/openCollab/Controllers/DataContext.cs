@@ -10,6 +10,8 @@ public class User
 
 public class Project
 {
+    public virtual List<UserReview> UserReviews { get; set; }
+
     public int Id { get; set; }
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
@@ -19,6 +21,18 @@ public class Project
     public virtual User User { get; set; } = null!;
 }
 
+public class UserReview
+{
+    public int Id { get; set; }
+
+    public int UserId { get; set; }
+    public virtual User User { get; set; }
+
+    public int ProjectId { get; set; }
+    public virtual Project Project { get; set; }
+
+    public bool Approved { get; set; }
+}
 
 public class DataContext : DbContext
 {

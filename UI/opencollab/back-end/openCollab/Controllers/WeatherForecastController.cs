@@ -49,6 +49,18 @@ public class WeatherForecastController : ControllerBase
 
         return Ok(existing.Id);
     }
+
+    [HttpGet("projects/discover")]
+    public IActionResult ProjectsDiscover([FromBody] int userId)
+    {
+        // Get projects that current user has not reviewed yet
+        var result = Context.Projects
+            .Where(pr => pr.UserReviews.All(ur => ur.UserId != userId))
+            .FirstOrDefault();
+
+        return Ok(result);
+    }
+
     [HttpGet("projects")]
     public IActionResult Projects()
     {

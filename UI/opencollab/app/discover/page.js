@@ -1,13 +1,8 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSprings, animated, to } from 'react-spring';
 import { useDrag } from 'react-use-gesture';
-
-// Define the cards array
-const cards = [
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg/1024px-Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg',
-];
 
 // Define the initial state
 const initialState = {
@@ -27,6 +22,16 @@ function handleSwipe(dir) {
 // Define the Deck component
 const Deck = () => {
     const [gone] = useState(() => new Set()); // The set flags all the cards that are flicked out
+    const [cards, setCards] = useState([]);
+
+    useEffect(() => {
+        // Fetch project data based on projectId from your API
+        fetch(`http://localhost:5005/projects`)
+            .then((response) => response.json())
+            .then((data) => setCards(data))
+            .catch((error) => console.log(error));
+    }, []);
+
 
     const [springs, set] = useSprings(cards.length, (i) => ({
         from: initialState,
