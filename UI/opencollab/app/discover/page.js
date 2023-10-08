@@ -1,45 +1,71 @@
 'use client'
 
-import React, { useEffect } from 'react';
+// Import necessary modules from 'react'
+import { useState } from 'react';
+import { useSprings, animated, interpolate } from 'react-spring';
+import { useDrag } from 'react-use-gesture';
 
-const FlashCard = ({ project }) => {
-    const { image, projectName, creatorName, description } = project;
+// Define the cards array
+const cards = [
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg/1024px-Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg',
+];
 
-    return (
-        <div className="bg-white shadow-lg rounded-lg">
-            <img className="w-48 object-cover" src={image} alt="Project Banner" />
-            <div className="px-6 py-4">
-                <div className="font-bold text-xl mb-2">{projectName}</div>
-                <p className="text-gray-700 text-base">{description}</p>
-            </div>
-            <div className="px-6 py-4">
-                <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
-                    {creatorName}
-                </span>
-            </div>
-        </div>
-    );
+// Define the initial state
+const initialState = {
+  x: 0,
+  y: 0,
+  rot: 0,
 };
 
-const FlashCardContainer = () => {
-    const projects = [
-        {
-            image: 'example.png',
-            projectName: 'Project 1',
-            creatorName: 'John Doe',
-            description: "When you look up into the night sky, do you wonder what's out there beyond our solar system? So do we! Come join us in learning more about exoplanets, the worlds that orbit distant stars.",
-        },
-        // Add more projects as needed
-    ];
+// Define the Deck component
+const Deck = () => {
+  const [gone] = useState(() => new Set()); // The set flags all the cards that are flicked out
 
-    return (
-        <div className="flex flex-wrap justify-center m-12">
-            {projects.map((project, index) => (
-                <FlashCard key={index} project={project} />
-            ))}
-        </div>
-    );
+  const [springs, set] = useSprings(cards.length, (i) => ({
+    from: initialState,
+    ...initialState,
+  }));
+
+  const bindGesture = useDrag(({ args: [index], down, movement: [deltaX, deltaY], distance, velocity }) => {
+    const trigger = velocity > 0.2 || Math.abs(deltaX) > 100;
+    const dir = deltaX > 0 ? 1 : -1;
+    if (!down && trigger) gone.add(index);
+
+    set((i) => {
+      if (index !== i) return;
+      const isGone = gone.has(index);
+
+      const x = isGone ? (200 + window.innerWidth) * dir : down ? deltaX : 0;
+      const y = down ? deltaY : 0;
+      const rot = down ? deltaX / 10 + (isGone ? dir * 10 * velocity : 0) : 0;
+      const config = {
+        friction: 50,
+        tension: down ? 800 : isGone ? 200 : 500,
+        clamp: down,
+      };
+
+      return { x, y, rot, config };
+    });
+  });
+
+  return (
+    <div>
+      {springs.map(({ x, y, rot }, i) => (
+        <animated.div key={i} style={{ transform: interpolate([x, y], (x, y) => `translate3d(${x}px,${y}px,0)`) }}>
+          <animated.div
+            {...bindGesture(i)}
+            style={{
+              transform: interpolate([rot], (rot) => `rotateX(30deg) rotateY(${rot / 10}deg) rotateZ(${rot}deg)`),
+              backgroundImage: `url(${cards[i]})`,
+              width: '200px',
+              height: '300px', // Adjust card size as needed
+            }}
+          />
+        </animated.div>
+      ))}
+    </div>
+  );
 };
 
-export default FlashCardContainer;
+export default Deck;
 
