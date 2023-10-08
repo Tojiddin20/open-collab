@@ -1,6 +1,5 @@
 'use client'
 
-// Import necessary modules from 'react'
 import { useState } from 'react';
 import { useSprings, animated, to } from 'react-spring';
 import { useDrag } from 'react-use-gesture';
