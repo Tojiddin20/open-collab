@@ -17,6 +17,14 @@ const initialState = {
   rot: 0,
 };
 
+function handleSwipe(dir) {
+    if (dir == 1) {
+        console.log("swiped right");
+    } else {
+        console.log("swiped left");
+    }
+}
+
 // Define the Deck component
 const Deck = () => {
   const [gone] = useState(() => new Set()); // The set flags all the cards that are flicked out
@@ -29,7 +37,12 @@ const Deck = () => {
   const bindGesture = useDrag(({ args: [index], down, movement: [deltaX, deltaY], distance, velocity }) => {
     const trigger = velocity > 0.2 || Math.abs(deltaX) > 100;
     const dir = deltaX > 0 ? 1 : -1;
-    if (!down && trigger) gone.add(index);
+    if (!down && trigger) {
+        gone.add(index);
+
+        console.log(dir);
+        handleSwipe(dir);
+    }
 
     set((i) => {
       if (index !== i) return;
@@ -49,7 +62,7 @@ const Deck = () => {
   });
 
   return (
-    <div>
+    <div className="flex justify-center">
       {springs.map(({ x, y, rot }, i) => (
         <animated.div key={i} style={{ transform: interpolate([x, y], (x, y) => `translate3d(${x}px,${y}px,0)`) }}>
           <animated.div
@@ -68,4 +81,3 @@ const Deck = () => {
 };
 
 export default Deck;
-
