@@ -39,11 +39,13 @@ public class WeatherForecastController : ControllerBase
         };
 
         var existing = Context.Users.FirstOrDefault(u => u.Email == user.Email);
-        if (existing is null) {
+        if (existing is null)
+        {
             return NotFound("User not found");
         }
 
-        if (existing.Password != user.Password) {
+        if (existing.Password != user.Password)
+        {
             return BadRequest("Invalid password");
         }
 
@@ -102,11 +104,49 @@ public class WeatherForecastController : ControllerBase
     public IActionResult GetProjects(int id)
     {
         var projects = Context.Projects.FirstOrDefault(p => p.Id == id);
-        if (projects is null) {
+        if (projects is null)
+        {
             return NotFound("Project not found");
         }
         return Ok(projects);
     }
+
+    [HttpPost("projects/vote")]
+    public IActionResult VoteProject([FromBody] VoteDto dto)
+    {
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(dto));
+
+        var user = Context.Users.FirstOrDefault(u => u.Id == dto.UserId);
+        if (user is null)
+        {
+            return NotFound("User not found");
+        }
+
+        var project = Context.Projects.FirstOrDefault(p => p.Id == dto.ProjectId);
+        if (project is null)
+        {
+            return NotFound("Project not found");
+        }
+
+        var userReview = new UserReview
+        {
+            UserId = dto.UserId,
+            ProjectId = dto.ProjectId,
+            Approved = dto.Approve
+        };
+
+        Context.UserReviews.Add(userReview);
+        Context.SaveChanges();
+
+        return Ok();
+    }
+}
+
+public class VoteDto
+{
+    public int UserId { get; set; }
+    public int ProjectId { get; set; }
+    public bool Approve { get; set; }
 }
 
 public class DiscoveryDto
@@ -128,7 +168,8 @@ public class RegisterDto
     public IFormFile Avatar { get; set; }
 }
 
-public class ProjectDto {
+public class ProjectDto
+{
     public string Name { get; set; }
     public string Description { get; set; }
     public int UserId { get; set; }

@@ -12,11 +12,33 @@ const initialState = {
     rot: 0,
 };
 
-function handleSwipe(dir) {
+function sendSwipeInfo(approve, projectId) {
+    fetch(`http://localhost:5005/projects/vote`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            projectId: projectId,
+            userId: JSON.parse(parseInt(localStorage.getItem('token'))),
+            approve: approve,
+        }),
+    }).then((result) => {
+        if (result.status === 200) {
+            toast.success("Successfully swiped");
+        } else {
+            toast.error("Failed to swipe");
+        }
+    })
+}
+
+function handleSwipe(dir, projectId) {
     if (dir == 1) {
         toast.message("swiped right");
+        sendSwipeInfo(true, projectId)
     } else {
         toast.message("swiped left");
+        sendSwipeInfo(false, projectId)
     }
 }
 
@@ -67,7 +89,7 @@ const Deck = () => {
             gone.add(index);
 
             console.log(dir);
-            handleSwipe(dir);
+            handleSwipe(dir, cards[0].id);
         }
 
         set((i) => {
