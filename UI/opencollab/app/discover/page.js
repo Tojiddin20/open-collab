@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useSprings, animated, to } from 'react-spring';
 import { useDrag } from 'react-use-gesture';
@@ -158,8 +159,11 @@ const Deck = () => {
                 </div>
             ) :
                 empty ? (
-                    <div className="flex justify-center">
-                        <h1 className="mt-44  font-bold text-5xl">You're all caught up 🎉!</h1>
+                    <div className="mt-44 flex justify-center">
+                    <div>
+                        <h1 className="font-bold text-5xl">You're all caught up 🎉!</h1>
+                        <Link className="mt-4 flex justify-center  p-2 bg-sky-400 rounded-md text-white font-bold" href="/project/matched">Go to matched 🤩</Link>
+                    </div>
                     </div>
                 ) : (
                     <div className="animate-pulse flex flex-col items-center justify-center min-h-screen bg-gray-100">

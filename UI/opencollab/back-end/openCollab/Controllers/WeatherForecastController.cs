@@ -90,13 +90,15 @@ public class WeatherForecastController : ControllerBase
             Name = dto.Name,
             Description = dto.Description,
             UserId = dto.UserId,
-            ImagePath = imagePath
+            ImagePath = imagePath,
         };
+
+        project.Tags = dto.Tags.Select(t => new Tag { Name = t }).ToList();
 
         Context.Projects.Add(project);
         Context.SaveChanges();
 
-        return Ok(project);
+        return Ok(new { Id = project.Id } );
     }
 
     private static string SaveImage(ProjectDto dto)
@@ -109,6 +111,26 @@ public class WeatherForecastController : ControllerBase
         }
 
         return fileName;
+    }
+
+    [HttpPost("matched")]
+    public IActionResult GetMatchedProjects(MatchedDto dto)
+    {
+        var projects = Context.Projects
+            .Include(x => x.User)
+            .Where(p => p.UserReviews.Any(ur => ur.UserId == dto.UserId && ur.Approved == true))
+            .Select(x => new DiscoveryResponseDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                ImagePath = x.ImagePath,
+                UserId = x.UserId,
+                CreatorName = x.User.Name
+            })
+            .ToList();
+
+        return Ok(projects);
     }
 
     [HttpGet("projects/{id}")]
@@ -127,13 +149,13 @@ public class WeatherForecastController : ControllerBase
     {
         Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(dto));
 
-        var user = Context.Users.FirstOrDefault(u => u.Id == dto.UserId);
+        var user = Context.Users.Include(x => x.Tags).FirstOrDefault(u => u.Id == dto.UserId);
         if (user is null)
         {
             return NotFound("User not found");
         }
 
-        var project = Context.Projects.FirstOrDefault(p => p.Id == dto.ProjectId);
+        var project = Context.Projects.Include(x => x.Tags).FirstOrDefault(p => p.Id == dto.ProjectId);
         if (project is null)
         {
             return NotFound("Project not found");
@@ -146,11 +168,38 @@ public class WeatherForecastController : ControllerBase
             Approved = dto.Approve
         };
 
+        var existingTags = user.Tags;
+        var projectTags = project.Tags.Select(t => t.Name).ToList();
+        var intersection = existingTags.Select(x => x.Name).Intersect(projectTags).ToList();
+
+        Console.WriteLine("Existing tags: " + string.Join(", ", existingTags));
+        Console.WriteLine("Project tags: " + string.Join(", ", projectTags));
+        Console.WriteLine("intersection tags: " + string.Join(", ", intersection));
+
+        HashSet<string> tags = new();
+        // update user tags
+        // add the tags that are not in the user tags, but are in the project tags
+        foreach (var tag in project.Tags)
+        {
+            if (!existingTags.Select(x => x.Name).Contains(tag.Name))
+            {
+                existingTags.Add(tag);
+                Console.WriteLine("Added tag: " + tag.Name);
+            }
+        }
+
+        user.Tags = existingTags;
+
         Context.UserReviews.Add(userReview);
         Context.SaveChanges();
 
         return Ok();
     }
+}
+
+public class MatchedDto
+{
+    public int UserId { get; set; }
 }
 
 internal class DiscoveryResponseDto
@@ -195,4 +244,5 @@ public class ProjectDto
     public string Description { get; set; }
     public int UserId { get; set; }
     public IFormFile Image { get; set; }
+    public List<string> Tags { get; set; }
 }

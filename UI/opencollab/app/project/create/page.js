@@ -57,7 +57,7 @@ const NewProjectForm = () => {
 
         if (result.status === 200) {
             let json = await result.json();
-            console.log(json);
+            console.warn(json);
             toast.success('Project created successfully!');
 
             router.push(`${json.id}`);
