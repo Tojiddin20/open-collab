@@ -40,12 +40,13 @@ const NewProjectForm = () => {
         // send api rejqust
         toast.loading('Creating new project...');
 
-        let result = await fetch('/api/project/create', {
+        let result = await fetch('http://localhost:5005/project/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
-            }
+            },
+            body: JSON.stringify({ name, description, image, tags })
         });
 
         if (result.status === 200) {

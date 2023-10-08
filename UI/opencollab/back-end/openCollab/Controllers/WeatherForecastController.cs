@@ -29,8 +29,28 @@ public class WeatherForecastController : ControllerBase
         return Ok(user);
     }
 
+    [HttpPost("auth/login")]
+    public IActionResult Login(LoginDto dto)
+    {
+        var user = new User
+        {
+            Email = dto.Email,
+            Password = dto.Password
+        };
 
-    [HttpGet("project/create")]
+        var existing = Context.Users.FirstOrDefault(u => u.Email == user.Email);
+        if (existing is null) {
+            return NotFound("User not found");
+        }
+
+        if (existing.Password != user.Password) {
+            return BadRequest("Invalid password");
+        }
+
+        return Ok(existing.Id);
+    }
+
+    [HttpPost("project/create")]
     public IActionResult CreateProject(ProjectDto dto)
     {
         var project = new Project
@@ -45,6 +65,12 @@ public class WeatherForecastController : ControllerBase
 
         return Ok(project);
     }
+}
+
+public class LoginDto
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
 }
 
 public class RegisterDto
