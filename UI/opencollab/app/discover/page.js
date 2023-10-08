@@ -131,18 +131,15 @@ const Deck = () => {
                                 <div className="flex justify-center">
                                     <div className="w-3/4 bg-white p-8 rounded shadow-lg">
                                         <img
-                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg/1024px-Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg"
+                                            src={`http://localhost:5005/${cards[0].imagePath}`}
                                             alt="Project Banner"
                                             className="w-full mb-4 rounded-lg select-none"
                                             draggable="false"
                                             dragstart="false"
                                         />
-                                        <h2 className="text-xl font-bold mb-2">Project Name</h2>
-                                        <p className="text-gray-700 mb-4">Creator Name</p>
-                                        <p className="text-gray-800">
-                                            Project DescriptionLorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                        </p>
+                                        <h2 className="text-xl font-bold mb-2">{cards[0].name}</h2>
+                                        <p className="text-gray-700 mb-4">{cards[0].creatorName}</p>
+                                        <p className="text-gray-800">{cards[0].description}</p>
                                     </div>
                                 </div>
                             </animated.div>

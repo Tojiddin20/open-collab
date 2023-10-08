@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace openCollab.Controllers;
 
@@ -58,6 +59,16 @@ public class WeatherForecastController : ControllerBase
         // Get projects that current user has not reviewed yet
         var result = Context.Projects
             .Where(pr => pr.UserReviews.All(ur => ur.UserId != dto.UserId))
+            .Include(x => x.User)
+            .Select(x => new DiscoveryResponseDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                ImagePath = x.ImagePath,
+                UserId = x.UserId,
+                CreatorName = x.User.Name
+            })
             .FirstOrDefault();
 
         return Ok(result);
@@ -140,6 +151,16 @@ public class WeatherForecastController : ControllerBase
 
         return Ok();
     }
+}
+
+internal class DiscoveryResponseDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public string ImagePath { get; set; }
+    public int UserId { get; set; }
+    public string CreatorName { get; set; }
 }
 
 public class VoteDto
