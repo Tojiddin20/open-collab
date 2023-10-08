@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
+import { useRouter } from "next/navigation"
 import Select from 'react-select';
 import { Toaster, toast } from 'sonner';
 
@@ -16,6 +17,7 @@ const NewProjectForm = () => {
     const [image, setImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [tags, setTags] = useState([]);
+    const router = useRouter();
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -57,6 +59,8 @@ const NewProjectForm = () => {
             let json = await result.json();
             console.log(json);
             toast.success('Project created successfully!');
+
+            router.push(json.id);
         } else {
             toast.error('Failed to create project.');
         }
