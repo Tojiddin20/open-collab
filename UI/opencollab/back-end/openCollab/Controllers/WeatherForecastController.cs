@@ -8,8 +8,13 @@ public class WeatherForecastController : ControllerBase
 {
     private readonly DataContext Context;
 
-    [HttpPost("reg")]
-    public IActionResult Register(RegisterDto dto)
+    public WeatherForecastController(DataContext context)
+    {
+        Context = context;
+    }
+
+    [HttpPost("auth/register")]
+    public IActionResult Register([FromForm] RegisterDto dto)
     {
         var user = new User
         {
@@ -23,6 +28,7 @@ public class WeatherForecastController : ControllerBase
 
         return Ok(user);
     }
+
 
     [HttpGet("project/create")]
     public IActionResult CreateProject(ProjectDto dto)
