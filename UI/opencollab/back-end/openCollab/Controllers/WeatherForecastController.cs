@@ -50,12 +50,12 @@ public class WeatherForecastController : ControllerBase
         return Ok(existing.Id);
     }
 
-    [HttpGet("projects/discover")]
-    public IActionResult ProjectsDiscover([FromBody] int userId)
+    [HttpPost("projects/discover")]
+    public IActionResult ProjectsDiscover([FromBody] DiscoveryDto dto)
     {
         // Get projects that current user has not reviewed yet
         var result = Context.Projects
-            .Where(pr => pr.UserReviews.All(ur => ur.UserId != userId))
+            .Where(pr => pr.UserReviews.All(ur => ur.UserId != dto.UserId))
             .FirstOrDefault();
 
         return Ok(result);
@@ -107,6 +107,11 @@ public class WeatherForecastController : ControllerBase
         }
         return Ok(projects);
     }
+}
+
+public class DiscoveryDto
+{
+    public int UserId { get; set; }
 }
 
 public class LoginDto

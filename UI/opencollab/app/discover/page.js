@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSprings, animated, to } from 'react-spring';
 import { useDrag } from 'react-use-gesture';
+import { Toaster, toast } from 'sonner';
 
 // Define the initial state
 const initialState = {
@@ -13,9 +14,9 @@ const initialState = {
 
 function handleSwipe(dir) {
     if (dir == 1) {
-        console.log("swiped right");
+        toast.message("swiped right");
     } else {
-        console.log("swiped left");
+        toast.message("swiped left");
     }
 }
 
@@ -23,18 +24,34 @@ function handleSwipe(dir) {
 const Deck = () => {
     const [gone] = useState(() => new Set()); // The set flags all the cards that are flicked out
     const [cards, setCards] = useState([]);
+    const [isLoaded, setIsLoaded] = useState(false);
 
-    useEffect(() => {
-        // Fetch project data based on projectId from your API
-        fetch(`http://localhost:5005/projects/discover`, {
-            method: 'GET',
+    async function getCardData() {
+        let result = await fetch(`http://localhost:5005/projects/discover`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
                 userId: JSON.parse(parseInt(localStorage.getItem('token'))),
             }),
         })
-            .then((response) => response.json())
-            .then((data) => setCards(data))
-            .catch((error) => console.log(error));
+
+        if (result.status === 200) {
+            let json = await result.json();
+            console.log(json);
+            setCards([json]);
+        } else {
+            toast.error("Failed to fetch cards");
+            toast.error(result.status)
+        }
+
+        setIsLoaded(true);
+    }
+
+    useEffect(() => {
+        // Fetch project data based on projectId from your API
+        getCardData();
     }, []);
 
 
@@ -72,39 +89,54 @@ const Deck = () => {
 
     return (
         <div className="flex justify-center">
-            <div className="w-1/2 h-full select-none bg-red-400">
-                {springs.map(({ x, y, rot }, i) => (
-                    <animated.div key={i} style={{ transform: to([x, y], (x, y) => `translate3d(${x}px,${y}px,0)`) }}>
-                        <animated.div
-                            {...bindGesture(i)}
-                            style={{
-                                transform: to([rot], (rot) => `rotateX(30deg) rotateY(${rot / 10}deg) rotateZ(${rot}deg)`),
-                                backgroundSize: 'cover',
-                            }}
-                        >
-                            <div className="flex justify-center">
-                                <div className="w-3/4 bg-white p-8 rounded shadow-lg">
-                                    <img
-                                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg/1024px-Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg"
-                                        alt="Project Banner"
-                                        className="w-full mb-4 rounded-lg select-none"
-                                        draggable="false"
-                                        dragstart="false"
-                                    />
-                                    <h2 className="text-xl font-bold mb-2">Project Name</h2>
-                                    <p className="text-gray-700 mb-4">Creator Name</p>
-                                    <p className="text-gray-800">
-                                        Project DescriptionLorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                        Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    </p>
+            <Toaster />
+            {isLoaded ? (
+                <div className="w-1/2 h-full select-none bg-red-400">
+                    {springs.map(({ x, y, rot }, i) => (
+                        <animated.div key={i} style={{ transform: to([x, y], (x, y) => `translate3d(${x}px,${y}px,0)`) }}>
+                            <animated.div
+                                {...bindGesture(i)}
+                                style={{
+                                    transform: to([rot], (rot) => `rotateX(30deg) rotateY(${rot / 10}deg) rotateZ(${rot}deg)`),
+                                    backgroundSize: 'cover',
+                                }}
+                            >
+                                <div className="flex justify-center">
+                                    <div className="w-3/4 bg-white p-8 rounded shadow-lg">
+                                        <img
+                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg/1024px-Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg"
+                                            alt="Project Banner"
+                                            className="w-full mb-4 rounded-lg select-none"
+                                            draggable="false"
+                                            dragstart="false"
+                                        />
+                                        <h2 className="text-xl font-bold mb-2">Project Name</h2>
+                                        <p className="text-gray-700 mb-4">Creator Name</p>
+                                        <p className="text-gray-800">
+                                            Project DescriptionLorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                            Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            </animated.div>
                         </animated.div>
-                    </animated.div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="animate-pulse flex flex-col items-center justify-center min-h-screen bg-gray-100">
+                    <div className="w-1/2 h-12 bg-gray-300 rounded mb-4"></div>
+                    <div className="w-3/4 h-32 bg-gray-300 rounded mb-4"></div>
+                    <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
+                    <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
+                    <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
+                    <div className="w-full h-4 bg-gray-300 rounded mb-2"></div>
+                </div>
+            )
+            }
         </div>
     );
 };
 
 export default Deck;
+
+
