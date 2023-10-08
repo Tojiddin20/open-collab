@@ -38,7 +38,7 @@ const RegisterPage = () => {
         formData.append('avatar', avatar);
 
         // send api request
-        fetch('http://localhost:5005/auth/register', {
+        fetch('http://162.55.160.162:5005/auth/register', {
             method: 'POST',
             body: formData
         }).then((result) => {

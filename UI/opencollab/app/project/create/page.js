@@ -50,7 +50,7 @@ const NewProjectForm = () => {
         // send api request
         toast.loading('Creating new project...');
 
-        let result = await fetch('http://localhost:5005/project/create', {
+        let result = await fetch('http://162.55.160.162:5005/project/create', {
             method: 'POST',
             body: formData
         });

@@ -24,7 +24,7 @@ const LoginPage = () => {
         console.log('Form submitted:', { email, password });
 
         // send api request
-        fetch('http://localhost:5005/auth/login', {
+        fetch('http://162.55.160.162:5005/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

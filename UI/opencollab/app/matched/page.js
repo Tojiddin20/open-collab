@@ -8,7 +8,7 @@ const MatchedProjectsPage = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     async function getMatchedAsync() {
-        let res = await fetch('http://localhost:5005/matched', {
+        let res = await fetch('http://162.55.160.162:5005/matched', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const MatchedProjectsPage = () => {
                         <div key={project.id} className="bg-white rounded-lg p-6 shadow-lg">
                             <h2 className="text-xl font-bold mb-4">{project.name}</h2>
                             <img
-                                src={`http://localhost:5005/${project.imagePath}`}
+                                src={`http://162.55.160.162:5005/${project.imagePath}`}
                                 alt="Project Image"
                                 className="inline-block h-[2.375rem] w-[2.375rem] rounded-md ring-2 ring-white dark:ring-gray-800"
                             />

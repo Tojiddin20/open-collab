@@ -9,7 +9,7 @@ const ProjectsPage = () => {
 
   useEffect(() => {
     // Fetch projects from your API
-    fetch('http://localhost:5005/projects', {
+    fetch('http://162.55.160.162:5005/projects', {
         method: 'GET',
     })
       .then((response) => response.json())
@@ -27,7 +27,7 @@ const ProjectsPage = () => {
             <div key={project.id} className="bg-white rounded-lg p-6 shadow-lg">
             <h2 className="text-xl font-semibold mb-2 text-blue-600">{project.name}</h2>
             <div className="flex items-center mb-4">
-            <img src={`http://localhost:5005/${project.imagePath}`} alt="Project Image" className="h-12 w-12 rounded-md mr-4" />
+            <img src={`http://162.55.160.162:5005/${project.imagePath}`} alt="Project Image" className="h-12 w-12 rounded-md mr-4" />
             <p className="text-gray-700 text-sm">{project.description}</p>
             </div>
             </div>

@@ -22,7 +22,7 @@ const ProjectDetails = ({ params }) => {
   useEffect(() => {
     if (id) {
       // Fetch project data based on projectId from your API
-      fetch(`http://localhost:5005/projects/${id}`)
+      fetch(`http://162.55.160.162:5005/projects/${id}`)
         .then((response) => response.json())
         .then((data) => setProject(data))
         .catch((error) => toast.error(error));
@@ -39,7 +39,7 @@ const ProjectDetails = ({ params }) => {
       <div className="max-w-5xl bg-white p-8 rounded-lg shadow-lg flex">
         <div className="w-1/2 flex flex-col justify-center items-center">
           <h1 className="text-3xl font-bold mb-4">{project.name}</h1>
-          <img src={`http://localhost:5005/${project.imagePath}`} alt="Project Image" className="w-full rounded-lg shadow-lg" />
+          <img src={`http://162.55.160.162:5005/${project.imagePath}`} alt="Project Image" className="w-full rounded-lg shadow-lg" />
         </div>
         <div className="w-1/2 p-6">
           <h2 className="text-xl font-bold mb-4">Project Description</h2>

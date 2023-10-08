@@ -22,7 +22,7 @@ const Deck = () => {
     const [shouldFetch, setShouldFetch] = useState(false);
 
     function sendSwipeInfo(approve, projectId) {
-        fetch(`http://localhost:5005/projects/vote`, {
+        fetch(`http://162.55.160.162:5005/projects/vote`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ const Deck = () => {
 
 
     async function getCardData() {
-        let result = await fetch(`http://localhost:5005/projects/discover`, {
+        let result = await fetch(`http://162.55.160.162:5005/projects/discover`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ const Deck = () => {
                                 <div className="flex justify-center">
                                     <div className="w-3/4 bg-white p-8 rounded shadow-lg">
                                         <img
-                                            src={`http://localhost:5005/${cards[0].imagePath}`}
+                                            src={`http://162.55.160.162:5005/${cards[0].imagePath}`}
                                             alt="Project Banner"
                                             className="w-full mb-4 rounded-lg select-none"
                                             draggable="false"
