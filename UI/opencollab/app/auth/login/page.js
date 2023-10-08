@@ -36,13 +36,16 @@ const LoginPage = () => {
                 toast.success('Login successful!');
 
                 router.push('/');
+                window.location.href = "/"
 
                 // get the returning int from the request
                 result.json().then((data) => {
                     console.log(data);
-                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("token", data);
                     localStorage.setItem("user", JSON.stringify(data.user));
                 });
+                window.location.reload();
+                router.push('/');
             } else {
                 toast.error('Login failed!');
             }

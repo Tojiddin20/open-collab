@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Select from 'react-select';
-import { Toaster, toast } from 'sonner'
+import { Toaster, toast } from 'sonner';
 
 const tagOptions = [
     { value: 'tag1', label: 'Tag 1' },
@@ -14,6 +14,7 @@ const NewProjectForm = () => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [image, setImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
     const [tags, setTags] = useState([]);
 
     const handleNameChange = (event) => {
@@ -25,7 +26,9 @@ const NewProjectForm = () => {
     };
 
     const handleImageChange = (event) => {
-        setImage(URL.createObjectURL(event.target.files[0]));  // Create preview URL for selected file
+        const file = event.target.files[0];
+        setImage(file);
+        setImagePreview(URL.createObjectURL(file));
     };
 
     const handleTagsChange = (selectedTags) => {
@@ -34,25 +37,28 @@ const NewProjectForm = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // Handle form submission here
-        console.log('Form submitted:', { name, description, image, tags });
 
-        // send api rejqust
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('image', image);
+        formData.append('tags', JSON.stringify(tags));
+        formData.append('userId', JSON.stringify(parseInt(localStorage.getItem('token'))));
+
+        // send api request
         toast.loading('Creating new project...');
 
         let result = await fetch('http://localhost:5005/project/create', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            },
-            body: JSON.stringify({ name, description, image, tags })
+            body: formData
         });
 
         if (result.status === 200) {
             let json = await result.json();
             console.log(json);
             toast.success('Project created successfully!');
+        } else {
+            toast.error('Failed to create project.');
         }
     };
 
@@ -89,9 +95,9 @@ const NewProjectForm = () => {
                         accept="image/*"
                         className="border border-gray-300 rounded px-3 py-2"
                     />
-                    {image && (
+                    {imagePreview && (
                         <img
-                            src={image}
+                            src={imagePreview}
                             alt="Preview"
                             className="mt-2 rounded-lg max-w-full"
                             style={{ maxHeight: '200px' }}

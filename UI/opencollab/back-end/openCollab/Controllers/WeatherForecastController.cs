@@ -51,7 +51,7 @@ public class WeatherForecastController : ControllerBase
     }
 
     [HttpPost("project/create")]
-    public IActionResult CreateProject(ProjectDto dto)
+    public IActionResult CreateProject([FromForm] ProjectDto dto)
     {
         var project = new Project
         {
