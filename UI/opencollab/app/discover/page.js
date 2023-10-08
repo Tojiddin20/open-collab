@@ -26,7 +26,12 @@ const Deck = () => {
 
     useEffect(() => {
         // Fetch project data based on projectId from your API
-        fetch(`http://localhost:5005/projects`)
+        fetch(`http://localhost:5005/projects/discover`, {
+            method: 'GET',
+            body: JSON.stringify({
+                userId: JSON.parse(parseInt(localStorage.getItem('token'))),
+            }),
+        })
             .then((response) => response.json())
             .then((data) => setCards(data))
             .catch((error) => console.log(error));
