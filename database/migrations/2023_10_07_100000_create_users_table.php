@@ -12,10 +12,11 @@ return new class extends Migration {
         Schema::create('users', static function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('type');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
-            $table->foreignUuid('external_authentication_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('external_authentication_id')->nullable()->constrained()->cascadeOnDelete();
             $table->rememberToken();
             $table->timestamps();
         });

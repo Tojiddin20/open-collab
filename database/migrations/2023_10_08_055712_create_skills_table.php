@@ -9,10 +9,9 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        Schema::create('external_authentications', static function (Blueprint $table) {
+        Schema::create('skills', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('system_id')->references('id')->on('external_authentication_systems')->cascadeOnDelete();
-            $table->string('authentication_id')->unique();
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -21,6 +20,6 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
-        Schema::dropIfExists('external_authentications');
+        Schema::dropIfExists('skills');
     }
 };

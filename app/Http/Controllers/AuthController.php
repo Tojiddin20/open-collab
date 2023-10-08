@@ -3,32 +3,71 @@
 namespace App\Http\Controllers;
 
 use App\Constants\ExternalAuthenticationSystems;
+use App\Constants\UserTypes;
 use App\Models\ExternalAuthentication;
 use App\Models\ExternalAuthenticationSystem;
 use App\Models\User;
 use Exception;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Throwable;
 
 class AuthController extends Controller {
     /**
-     * @return View
+     * @param Request $request
+     * @return void
      */
-    public function login(): View {
-        return view('login');
+    public function registration(Request $request): void {
+        $request->validate([
+            'name' => 'required|string',
+            'type' => 'required|string|in:' . UserTypes::CREATOR . ',' . UserTypes::CONTRIBUTOR,
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        User::query()->create([
+            'name' => $request->get('name'),
+            'type' => $request->get('type'),
+            'email' => $request->get('email'),
+            'password' => Hash::make($request->get('name')),
+        ]);
     }
 
     /**
+     * @param Request $request
      * @return RedirectResponse
      */
-    public function logout(): RedirectResponse {
+    public function login(Request $request): RedirectResponse {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return response()->json(['message' => 'Successfully logged in!']);
+        }
+
+        return response()->json(['message' => 'Something went wrong...']);
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function logout(Request $request): RedirectResponse {
         Auth::logout();
-        return redirect('/');
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return response()->json(['message' => 'Successfully logged out!']);
     }
 
     /**
@@ -50,12 +89,10 @@ class AuthController extends Controller {
                     ->where('name', '=', $system)
                     ->first();
 
-                $externalAuthenticationId = Str::uuid()->toString();
-                ExternalAuthentication::query()->create([
-                    'id' => $externalAuthenticationId,
+                $externalAuthenticationId = ExternalAuthentication::query()->create([
                     'system_id' => $externalAuthenticationSystem->id,
                     'authentication_id' => $googleUser->getId(),
-                ]);
+                ])->id;
 
                 $user = User::query()->create([
                     'name' => $googleUser->getName(),
@@ -75,7 +112,6 @@ class AuthController extends Controller {
             return redirect('/');
         } catch (Throwable $exception) {
             DB::rollBack();
-            ddd($exception);
             return "Something went wrong: {$exception->getMessage()}";
         }
     }
