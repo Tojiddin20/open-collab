@@ -49,6 +49,11 @@ public class WeatherForecastController : ControllerBase
 
         return Ok(existing.Id);
     }
+    [HttpGet("projects")]
+    public IActionResult Projects()
+    {
+        return Ok(Context.Projects.ToList());
+    }
 
     [HttpPost("project/create")]
     public IActionResult CreateProject([FromForm] ProjectDto dto)

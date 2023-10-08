@@ -9,6 +9,7 @@ const Header = () => {
             <h1 className="text-white text-2xl font-bold">Your Web App Name</h1>
             <div className="flex space-x-4">
                 <Link href="/project/create" className="text-white">create new project</Link>
+                <Link href="/project/all" className="text-white">All projects</Link>
         {localStorage.getItem("token") === null ? (
             <div className="flex space-x-4">
                 <Link href="/auth/login" className="text-white">Login</Link>
