@@ -6,6 +6,18 @@ public class User
     public string Name { get; set; } = null!;
     public string Email { get;  set; }
     public string Password { get;  set; }
+
+    public virtual List<Tag> Tags { get; set; }
+}
+
+public class Tag
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+
+    public virtual List<User> Users { get; set; }
+    public virtual List<Project> Projects { get; set; }
 }
 
 public class Project
@@ -19,6 +31,8 @@ public class Project
 
     public int UserId { get; set; }
     public virtual User User { get; set; } = null!;
+
+    public virtual List<Tag> Tags { get; set; }
 }
 
 public class UserReview
